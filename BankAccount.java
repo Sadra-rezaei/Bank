@@ -33,4 +33,9 @@ public class BankAccount {
     public String getAddress() {
         return this.address;
     }
+
+    public String getPassword() {
+        return this.password;
+    };
+
 }

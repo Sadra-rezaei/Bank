@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class ATM {
     public static void main(String[] args) {
-        System.out.println("====== Sadra Bank ======\n\n");
+
         boolean hasAccount = false;
         Scanner scanner = new Scanner(System.in);
         ArrayList<BankAccount> allAccounts = new ArrayList<>();
@@ -16,6 +16,7 @@ public class ATM {
 
         do {
 
+            System.out.println("\n====== Sadra Bank ======\n\n");
             if (!hasAccount) {
                 System.out.println("0. Create an account");
                 System.out.println("10. Login Account");
@@ -68,7 +69,7 @@ public class ATM {
                             while (true) {
                                 System.out.print("Enter your bank password: ");
                                 tempPassword = scanner.next();
-                                if (tempPassword.equals(tempPassword)) {
+                                if (tempPassword.equals(account.getPassword())) {
                                     selectedAccount = account;
                                     hasAccount = true;
                                     break;
@@ -85,8 +86,11 @@ public class ATM {
                 case 1:
                     if (hasAccount) {
                         System.out.print("Enter the amount to deposit: ");
-                        amount = scanner.nextInt();
-
+                        while (true) {
+                            amount = scanner.nextInt();
+                            if (!(amount <= 0))
+                                break;
+                        }
                         selectedAccount.deposit(amount);
                     }
                     else
