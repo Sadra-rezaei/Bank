@@ -4,13 +4,16 @@ public class BankAccount {
     private int balance;
     private final String address;
     private String password;
+    private DepositType depositType;
 
-    public BankAccount(String name, int age, String address, String password) {
+    public BankAccount(String name, int age, String address, String password, DepositType depositType) {
         this.name = name;
         this.age = age;
         this.address = address;
         this.balance = 0;
         this.password = password;
+        this.depositType = depositType;
+
 
     }
 
@@ -36,6 +39,9 @@ public class BankAccount {
 
     public String getPassword() {
         return this.password;
-    };
+    }
 
+    public DepositType getDepositType() {
+        return depositType;
+    }
 }

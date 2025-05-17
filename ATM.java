@@ -12,7 +12,7 @@ public class ATM {
         BankAccount selectedAccount = null;
         String tempAddress;
         String tempPassword;
-        int amount;
+        int amount = 0;
 
         do {
 
@@ -36,6 +36,7 @@ public class ATM {
             switch (choice) {
                 case 0:
                     Random random = new Random();
+                    DepositType tempDepositType = null;
 
                     System.out.print("Enter your name: ");
                     String name = scanner.next();
@@ -50,7 +51,21 @@ public class ATM {
                     System.out.print("\nEnter a password: ");
                     tempPassword = scanner.next();
 
-                    allAccounts.add(new BankAccount(name, age, tempAddress, tempPassword));
+                    System.out.println("\nWhat type of money do you want to keep in your account? ");
+                    System.out.println("1. Dollar\n2. Rials");
+                    int type = scanner.nextInt();
+                    switch (type) {
+                        case 1:
+                            tempDepositType = DepositType.DOLLARS;
+                            break;
+
+                        case 2:
+                            tempDepositType = DepositType.RIALS;
+                            break;
+                    }
+
+
+                    allAccounts.add(new BankAccount(name, age, tempAddress, tempPassword,tempDepositType));
 
                     selectedAccount = allAccounts.get(allAccounts.size() - 1);
                     hasAccount = true;
@@ -83,13 +98,39 @@ public class ATM {
                     break;
 
 
-                case 1:
+                case 1:  // Deposit
                     if (hasAccount) {
-                        System.out.print("Enter the amount to deposit: ");
-                        while (true) {
-                            amount = scanner.nextInt();
-                            if (!(amount <= 0))
-                                break;
+                        DepositType depositType = exchange(scanner);
+
+                        if (depositType == selectedAccount.getDepositType()) {
+                            System.out.print("Enter the amount to deposit to "+ depositType+": ");
+                            while (true) {
+                                amount = scanner.nextInt();
+                                if (!(amount <= 0))
+                                    break;
+                            }
+                        }
+                        else {
+                            if (selectedAccount.getDepositType() == DepositType.DOLLARS) {
+                                System.out.print("Enter the amount to deposit to "+ depositType+": ");
+                                while (true) {
+                                    amount = scanner.nextInt();
+                                    if (!(amount <= 0))
+                                        break;
+                                }
+                                amount /= (int) CurrencyFetcher.getUSDPrice();
+
+                            }
+                            else if (selectedAccount.getDepositType() == DepositType.RIALS) {
+                                System.out.print("Enter the amount to deposit to "+ depositType+": ");
+                                while (true) {
+                                    amount = scanner.nextInt();
+                                    if (!(amount <= 0))
+                                        break;
+                                }
+                                amount *= (int) CurrencyFetcher.getUSDPrice();
+
+                            }
                         }
                         selectedAccount.deposit(amount);
                     }
@@ -97,25 +138,54 @@ public class ATM {
                         System.out.println("====Error: Select an account first\n");
                     break;
 
-                case 2:
+                case 2: //Withdraw
                     if (hasAccount) {
-                        System.out.print("Enter the amount to withdraw: ");
-                        amount = scanner.nextInt();
+                        DepositType depositType = exchange(scanner);
 
-                        selectedAccount.withdraw(amount);
+                        if (depositType == selectedAccount.getDepositType()) {
+                            System.out.print("Enter the amount to withdraw: ");
+                            while (true) {
+                                amount = scanner.nextInt();
+                                if (!(amount <= 0))
+                                    break;
+                            }                        }
+
+                        else {
+
+                            if (selectedAccount.getDepositType() == DepositType.DOLLARS) {
+                                System.out.print("Enter the amount to withdraw to " + depositType + ": ");
+                                while (true) {
+                                    amount = scanner.nextInt();
+                                    if (!(amount <= 0))
+                                        break;
+                                }
+                                amount /= (int) CurrencyFetcher.getUSDPrice();
+
+                            } else if (selectedAccount.getDepositType() == DepositType.RIALS) {
+
+                                System.out.print("Enter the amount to withdraw to " + depositType + ": ");
+                                while (true) {
+                                    amount = scanner.nextInt();
+                                    if (!(amount <= 0))
+                                        break;
+                                }
+                                amount /= (int) CurrencyFetcher.getUSDPrice();
+                            }
+                        }
+                    selectedAccount.withdraw(amount);
                     }
                     else
                         System.out.println("====Error: Select an account first\n");
                     break;
 
-                case 3:
+                case 3:  //View balance
                     if (hasAccount)
-                        System.out.println("Your balance is: " + selectedAccount.getBalance() + "\n");
+                        System.out.println("Your balance is: " + selectedAccount.getBalance() +" on "+ selectedAccount.getDepositType()+ "\n");
                     else
                         System.out.println("====Error: Select an account first\n");
                     break;
 
-                case 4:
+                case 4:  //Logout
                     selectedAccount = null;
                     hasAccount = false;
                     break;
@@ -126,5 +196,22 @@ public class ATM {
                 break;
 
         } while (true);
+    }
+
+    public static DepositType exchange(Scanner input) {
+
+        System.out.println("Would you like your transaction to be in dollars or rials? ");
+        System.out.println("1-Dollars\n2-Rials");
+        boolean breaker = true;
+        while (true) {
+            int type = input.nextInt();
+            if (type == 1) {
+                return DepositType.DOLLARS;
+            } else if (type == 2) {
+                return DepositType.RIALS;
+            } else {
+                System.out.println("invalid option");
+            }
+        }
     }
 }
